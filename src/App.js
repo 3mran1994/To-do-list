@@ -57,7 +57,9 @@ const App = () => {
         <div className="app">
             <h1>Todo List</h1> 
             <p>You have {remainingTasks} {remainingTasks === 1 ? "task" : "tasks"} remaining</p> {/* we are referancing the variable remainingTasks in {} so that the text will show us the dynamic number of tasks remaining. The turnary operator sets the condition that if the amount of task (remainingTasks) is exactly equal to only 1 then print "task" singular in the paragraph, and if it does not equal 1 than print "tasks" in the paragraph. This allows us to have a set paragraph that can change dynamically */}
-            <button onClick={clearCompleted}>Clear Completed</button>
+            {todos.some(todo => todo.completed) && ( // todos.some(...) is a built in function that returns true if it finds at least one item that matches the rule. todo=>todo.completed is the rule, it looks for any task where completed is true (todo.completed is a shortcut for todo.completed === true). 
+                <button onClick={clearCompleted}>Clear Completed</button>
+            )}
             {previousTodos && ( // && is React for AND operator for Show/Hide logic. This is the undo 
                 <button onClick={undoClear} style={{ marginLeft: '10px' }}>
                     Undo
