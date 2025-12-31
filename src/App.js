@@ -6,7 +6,8 @@ import './styles/App.css';
 const App = () => {
     const [todos, setTodos] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null); // New state addition
-    const [previousTodos, setPreviousTodos] = useState(null); // Use state for undo feature.
+    const [previousTodos, setPreviousTodos] = useState(null); // Use state for undo feature
+    const [filter, setFilter] = useState('all'); // Use state for clear completed button. (filter) is the variable that remembers our current choice ('all', 'active', 'completed'). (setFilter) the setter function we will use to  change the choice when a button is clicked. (useState('all')) useState is the React hook for memory and ('all') is the initial value. We use string because our filter names are words.
 
     const remainingTasks = todos.filter (todo => todo.completed === false).length // todos is our master list (the array of all the tasks). .filter is a built in JS function that goes through the list one by one and checks if meets the conditions for it to stay or go (does it belong in the new list). For the contents of the filter function, todo (without the s) is the specific task on the list, todo.completed === false is the rule for the filter. if a task meets this condition, that it is not completed (false) then the filter will keep it in the list. If it is completed the filter will filter it out of the calculation. .length is a property of arrays that tells the count of how many items are inside tht array. So after the filter finishes it creates a new list of only the unfinished tasks and . length counts them and gives us the number.
 
@@ -53,6 +54,12 @@ const App = () => {
         setPreviousTodos(null); // this is setting the backup state back to null, so there is no saved backup. it basically clears the memory. This is used to make the undo button dynamic and only show up if there is something in the back up to restore.
     };
 
+    const filteredTodos = todos.filter(todo => { // New variable for our new temporary list. (todo => {...}) for every single task run the logic inside the {} to figure out if it stays or goes.
+        if (filter === 'active') return todo.completed === false; // if the user clicked the "Active" button... only keep the tasks that are not finished.
+        if (filter === 'completed') return todo.completed === true; // if the user clicked the "Completed" button... only keep the tasks that are finished.
+        return true; // this is the "catch-all". if the filter is set to 'all' this line tells the filter to keep every task. in a filter (return true) means "yes, keep this item".
+    });
+
     return (
         <div className="app">
             <h1>Todo List</h1> 
@@ -65,11 +72,37 @@ const App = () => {
                     Undo
                 </button>
             )}
+
+            <div className="filter-bar" style={{ marginTop: '20px', marginBottom: '20px' }}> {/* New addition. This is the filter-by-type feature. <div is the container to place our 3 <button(s). className = is the label we give our filter bar so we can style it in CSS later. */}
+                    <button 
+                        onClick={() => setFilter('all')}
+                        style={{ fontWeight: filter === 'all' ? 'bold' : 'normal' }}
+                    >
+                        All
+                    </button> {/* telling the app to show everything when clicked */}
+                    <button 
+                        onClick={() => setFilter('active')} 
+                        style={{ 
+                            marginLeft: '10px',
+                            fontWeight: filter === 'active' ? 'bold' : 'normal' }}
+                    >
+                        Active
+                    </button> {/* telling the app to show only the tasks that are not finished */}
+                    <button 
+                        onClick={() => setFilter('completed')} 
+                        style={{ 
+                            marginLeft: '10px',
+                            fontWeight: filter === 'completed' ? 'bold' : 'normal' }}
+                    >
+                        Completed
+                    </button> {/* telling the app to only show the tasks that are finished */}
+            </div>
+
             <AddTodo 
                 onAdd={addTodo} 
             />
             <TodoList 
-                todos={todos} 
+                todos={filteredTodos} // changed from 'todos' to 'filteredTodos'
                 removeTodo={removeTodo} 
                 toggleTodo={toggleTodo} 
                 editingIndex={editingIndex} // New addition 
